@@ -23,7 +23,7 @@ void destroy_dynamic_array(dynamic_array* d_array)
 }
 
 
-void push(dynamic_array* d_array, element_t value)
+void da_push(dynamic_array* d_array, element_t value)
 {
     if(d_array->length * sizeof(element_t) == d_array->size)
     {

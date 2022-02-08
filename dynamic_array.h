@@ -20,7 +20,7 @@ dynamic_array* new_dynamic_array();
 /* 删除动态扩容数组 */
 void destroy_dynamic_array(dynamic_array* d_array);
 
-void push(dynamic_array* d_array, element_t value);
+void da_push(dynamic_array* d_array, element_t value);
 
 /* 
     打印动态扩容数组
