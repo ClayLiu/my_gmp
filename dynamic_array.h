@@ -39,4 +39,14 @@ void print_dynamic_array(dynamic_array* d_array);
  */
 void to_file(dynamic_array* d_array, FILE* fp);
 
+/* 
+    从文件加载
+    以
+        length (8 Bytes)
+        elem_size (8 Bytes)
+        data..
+    加载
+ */
+dynamic_array* from_file(FILE* fp);
+
 #endif

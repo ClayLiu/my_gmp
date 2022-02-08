@@ -65,3 +65,34 @@ void to_file(dynamic_array* d_array, FILE* fp)
 
     fwrite(d_array->array, sizeof(element_t), d_array->length, fp);
 }
+
+
+unsigned long long highbit(unsigned long long x)
+{
+    unsigned long long prev, curr;
+    prev = curr = x;
+    while(curr)
+    {
+        prev = curr;
+        curr &= prev - 1;
+    }
+    return prev;
+}
+
+
+dynamic_array* from_file(FILE* fp)
+{
+    size_t element_size;
+    dynamic_array* array = malloc(sizeof(dynamic_array));
+
+    fread(&array->length, sizeof(size_t), 1, fp);
+    fread(&element_size, sizeof(size_t), 1, fp);
+
+    array->size = (highbit(array->length) << 1) * element_size;
+    array->array = malloc(array->size);
+
+    fread(array->array, element_size, array->length, fp);
+    
+    return array;
+}
+
