@@ -1,5 +1,5 @@
 #include "my_gmp.h"
-
+#include "utils/gmp_in_char.h"
 
 huge_number* new_huge_number(unsigned long long x, bool sign)
 {
@@ -61,6 +61,25 @@ void print_huge_number_bin(const huge_number* hn)
             number <<= 1;
         }
     }
+}
+
+static char* ull_to_str(unsigned long long x, unsigned long long power)
+{
+    char* str = malloc(sizeof(char) * 16);
+    
+}
+
+void print_huge_number_dec(const huge_number* hn)
+{
+    size_t i;
+    size_t length = hn->da->length;
+    char** numbers_dec = malloc(sizeof(char*) * length);
+    
+    for(i = 0; i < length; i++)
+        free(numbers_dec[i]);
+
+    free(numbers_dec);
+
 }
 
 
