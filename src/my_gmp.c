@@ -1,5 +1,4 @@
 #include "my_gmp.h"
-#include "utils/gmp_in_char.h"
 
 huge_number* new_huge_number(unsigned long long x, bool sign)
 {
