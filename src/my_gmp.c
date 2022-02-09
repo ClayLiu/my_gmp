@@ -1,4 +1,5 @@
 #include "my_gmp.h"
+#include "string_tool.h"
 
 huge_number* new_huge_number(unsigned long long x, bool sign)
 {
@@ -62,10 +63,28 @@ void print_huge_number_bin(const huge_number* hn)
     }
 }
 
-static char* ull_to_str(unsigned long long x, unsigned long long power)
+static char* mul_2_raise_32(char* x, size_t length, size_t* new_length)
 {
+
+}
+
+/* return x * (2 ^ (32 * power)) in reversed str */
+static char* muled_ull_to_str(unsigned long long x, unsigned long long power)
+{
+    size_t i;
+    size_t length;
     char* str = malloc(sizeof(char) * 16);
+    ull_to_str(x, str, &length);
     
+    while(power--)
+        str = mul_2_raise_32(str, length, &length);
+    
+    for(i = 0; i < length; i++)
+        str[i] += '0';
+    
+    str[i] = 0;
+
+    return str;
 }
 
 void print_huge_number_dec(const huge_number* hn)
@@ -74,6 +93,9 @@ void print_huge_number_dec(const huge_number* hn)
     size_t length = hn->da->length;
     char** numbers_dec = malloc(sizeof(char*) * length);
     
+    for(i = 0; i < length; i++)
+        numbers_dec[i] = muled_ull_to_str(hn->da->array[i], i);
+
     for(i = 0; i < length; i++)
         free(numbers_dec[i]);
 
