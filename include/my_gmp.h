@@ -1,9 +1,11 @@
 #ifndef MY_GMP_H_HDIFHD
 #define MY_GMP_H_HDIFHD
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "dynamic_array.h"
+
+extern const unsigned long long high_half_mask;
+extern const unsigned long long low_half_mask;
 
 typedef char bool;
 
