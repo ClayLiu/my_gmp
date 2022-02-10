@@ -24,6 +24,9 @@ void da_push(dynamic_array* d_array, element_t value);
 
 element_t da_top(dynamic_array* d_array);
 
+/* 从数组头部插入 count 个 value */
+void da_padding(dynamic_array* d_array, element_t value, size_t count);
+
 /* 
     打印动态扩容数组
     以元素类型为 unsigned long long 来打印

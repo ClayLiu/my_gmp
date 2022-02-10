@@ -115,7 +115,7 @@ void print_huge_number_hex(const huge_number* hn)
     char j;
     size_t i;
     unsigned long long number;
-    char value;
+    char value, flag = 0;
     const unsigned long long kernel = 0xF0000000ULL;
 
     const size_t length = hn->da->length;
@@ -133,7 +133,7 @@ void print_huge_number_hex(const huge_number* hn)
         {
             value = (number & kernel) >> 28;
             if(0 <= value && value <= 9)
-                putchar(value + '0');
+                (value != 0 || flag) && (putchar(value + '0'), flag = 1);
             else
                 putchar(value + 'A' - 10);
             
