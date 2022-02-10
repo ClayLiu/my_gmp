@@ -18,6 +18,10 @@ $(TARGET_PATH):$(OBJS)
 $(OBJ)/%.o:$(SRC)/%.c
 	gcc $(CFLAGS) -c $< -o $@
 
+.PHONY:run
+run:$(TARGET_PATH)
+	bin\main.exe
+
 .PHONY:clean
 clean:
 	@echo Clean my ass.

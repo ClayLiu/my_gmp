@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <string.h>
 #include "dynamic_array.h"
 
@@ -48,6 +49,13 @@ void da_push(dynamic_array* d_array, element_t value)
 }
 
 
+inline element_t da_top(dynamic_array* d_array)
+{
+    assert(d_array->length > 0ULL);
+    return d_array->array[d_array->length - 1];
+}
+
+
 void print_dynamic_array(dynamic_array* d_array)
 {
     size_t i;
@@ -67,7 +75,7 @@ void to_file(dynamic_array* d_array, FILE* fp)
 }
 
 
-unsigned long long highbit(unsigned long long x)
+static unsigned long long highbit(unsigned long long x)
 {
     unsigned long long prev, curr;
     prev = curr = x;

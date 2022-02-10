@@ -35,6 +35,8 @@ huge_number* new_huge_number_zero();
     /* 以十进制打印超大数 */
     void print_huge_number_dec(const huge_number* hn);
 
+    /* 以十六进制打印超大数 */
+    void print_huge_number_hex(const huge_number* hn);
 
 /* 原地四则运算 */
 

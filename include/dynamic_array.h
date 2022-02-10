@@ -22,6 +22,8 @@ void destroy_dynamic_array(dynamic_array* d_array);
 
 void da_push(dynamic_array* d_array, element_t value);
 
+element_t da_top(dynamic_array* d_array);
+
 /* 
     打印动态扩容数组
     以元素类型为 unsigned long long 来打印

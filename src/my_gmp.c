@@ -1,6 +1,12 @@
 #include "my_gmp.h"
 #include "string_tool.h"
 
+#define print_sign(hn) ((((hn)->sign) == negative_sign) && putchar('-'))
+
+const unsigned long long high_half_mask = 0xFFFFFFFF00000000;
+const unsigned long long low_half_mask = 0x00000000FFFFFFFF;
+
+
 huge_number* new_huge_number(unsigned long long x, bool sign)
 {
     huge_number* hn = malloc(sizeof(huge_number));
@@ -8,7 +14,8 @@ huge_number* new_huge_number(unsigned long long x, bool sign)
     hn->da = new_dynamic_array();
     hn->sign = sign;
 
-    da_push(hn->da, x);
+    da_push(hn->da, x & low_half_mask);
+    da_push(hn->da, (x & high_half_mask) >> 32);
     return hn;
 }
 
@@ -20,13 +27,13 @@ void destroy_huge_number(huge_number* hn)
 }
 
 
-huge_number* new_huge_number_one()
+inline huge_number* new_huge_number_one()
 {
     return new_huge_number(1, positive_sign);
 }
 
 
-huge_number* new_huge_number_zero()
+inline huge_number* new_huge_number_zero()
 {
     return new_huge_number(0, positive_sign);
 }
@@ -42,8 +49,7 @@ void print_huge_number_bin(const huge_number* hn)
     const size_t length = hn->da->length;
     const unsigned long long* array = hn->da->array;
 
-    if(hn->sign == negative_sign)
-        putchar('-');
+    print_sign(hn);
     
     for(i = 0; i < length; i++)
     {
@@ -63,46 +69,114 @@ void print_huge_number_bin(const huge_number* hn)
     }
 }
 
-static char* mul_2_raise_32(char* x, size_t length, size_t* new_length)
-{
 
+static void format_in_radix_10(dynamic_array* da)
+{
+    size_t k;
+    unsigned long long carry;
+
+    for(k = 0; k < da->length - 1; k++)
+    {
+        da->array[k + 1] += da->array[k] / 10;
+        da->array[k] %= 10;
+    }
+
+    carry = da_top(da);
+    while(carry > 10)
+    {
+        da->array[da->length - 1] %= 10;
+        da_push(da, carry / 10);
+        carry = da_top(da);
+    }
 }
 
-/* return x * (2 ^ (32 * power)) in reversed str */
-static char* muled_ull_to_str(unsigned long long x, unsigned long long power)
-{
-    size_t i;
-    size_t length;
-    char* str = malloc(sizeof(char) * 16);
-    ull_to_str(x, str, &length);
-    
-    while(power--)
-        str = mul_2_raise_32(str, length, &length);
-    
-    for(i = 0; i < length; i++)
-        str[i] += '0';
-    
-    str[i] = 0;
-
-    return str;
-}
 
 void print_huge_number_dec(const huge_number* hn)
 {
-    size_t i;
+    print_sign(hn);
+
+    size_t i, j, k;
     size_t length = hn->da->length;
-    char** numbers_dec = malloc(sizeof(char*) * length);
-    
-    for(i = 0; i < length; i++)
-        numbers_dec[i] = muled_ull_to_str(hn->da->array[i], i);
+    size_t min_length;
+
+    char flag;
+    unsigned long long curr_element;
+
+    dynamic_array* curr = new_dynamic_array();
+    dynamic_array* sum = new_dynamic_array();
 
     for(i = 0; i < length; i++)
-        free(numbers_dec[i]);
+    {
+        curr->length = 0;                               // curr = curr_element
+        curr_element = hn->da->array[i];                //
+        flag = curr_element == 0;                       //
+                                                        //
+        while(curr_element)                             //
+        {                                               //
+            da_push(curr, curr_element % 10);           //
+            curr_element /= 10;                         //
+        }                                               //
+                                                        //
+        if(flag)                                        //
+            da_push(curr, 0ULL);                        //
 
-    free(numbers_dec);
+        for(j = 0; j < i; j++)                          // calculate curr *= (2 ^ (32 * i))
+        {
+            for(k = 0; k < curr->length; k++)
+                curr->array[k] <<= 32;
+            
+            format_in_radix_10(curr);
+        }
 
+        min_length = __min(curr->length, sum->length);  // sum += curr
+        for(j = 0; j < min_length; j++)                 // 
+            sum->array[j] += curr->array[j];            //
+                                                        //
+        for(; j < curr->length; j++)                    //
+            da_push(sum, curr->array[j]);               // 
+
+        format_in_radix_10(sum);
+    }
+
+    for(i = 0; i < sum->length; i++)
+        putchar(sum->array[sum->length - i - 1] + '0');
+
+    destroy_dynamic_array(curr);
+    destroy_dynamic_array(sum);
 }
 
+
+void print_huge_number_hex(const huge_number* hn)
+{
+    char j;
+    size_t i;
+    unsigned long long number;
+    char value;
+    const unsigned long long kernel = 0xF0000000ULL;
+
+    const size_t length = hn->da->length;
+    const unsigned long long* array = hn->da->array;
+
+    print_sign(hn);
+    printf("0x");
+
+    for(i = 0; i < length; i++)
+    {
+        number = array[length - 1 - i];
+        // printf("%llu\n", number);
+        
+        for(j = 0; j < 8; j++)
+        {
+            value = (number & kernel) >> 28;
+            if(0 <= value && value <= 9)
+                putchar(value + '0');
+            else
+                putchar(value + 'A' - 10);
+            
+            number <<= 4;
+        }
+    }
+}
 
 /* l += r */
 void add_inplace(huge_number* hn_l, const huge_number* hn_r);
