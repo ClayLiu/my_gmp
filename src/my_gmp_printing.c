@@ -55,6 +55,33 @@ static void format_in_radix_10(dynamic_array* da)
 }
 
 
+static char* dec_huge_number_to_str(const dynamic_array* da)
+{
+    size_t length = da->length;
+    size_t t = (length + 7) / 8;
+    
+    char* buffer = malloc(sizeof(char) * (length + 1));
+    char* p = buffer;
+    unsigned long long* array = da->array + length - 1;
+
+    switch(length % 8)
+    {
+        case 0: do {    *p = *array + '0'; p++; array--;
+        case 7:         *p = *array + '0'; p++; array--;
+        case 6:         *p = *array + '0'; p++; array--;
+        case 5:         *p = *array + '0'; p++; array--;
+        case 4:         *p = *array + '0'; p++; array--;
+        case 3:         *p = *array + '0'; p++; array--;
+        case 2:         *p = *array + '0'; p++; array--;
+        case 1:         *p = *array + '0'; p++; array--;
+        } while(--t);
+    }
+
+    *p = 0;
+    return buffer;
+}
+
+
 void print_huge_number_dec(const huge_number* hn)
 {
     print_sign(hn);
@@ -68,6 +95,8 @@ void print_huge_number_dec(const huge_number* hn)
 
     dynamic_array* curr = new_dynamic_array();
     dynamic_array* sum = new_dynamic_array();
+
+    char* output_buffer;
 
     for(i = 0; i < length; i++)
     {
@@ -102,8 +131,12 @@ void print_huge_number_dec(const huge_number* hn)
         format_in_radix_10(sum);
     }
 
-    for(i = 0; i < sum->length; i++)
-        putchar(sum->array[sum->length - i - 1] + '0');
+    // for(i = 0; i < sum->length; i++)
+    //     putchar(sum->array[sum->length - i - 1] + '0');
+
+    output_buffer = dec_huge_number_to_str(sum);    // much faster than the way above.
+    puts(output_buffer);
+    free(output_buffer);
 
     destroy_dynamic_array(curr);
     destroy_dynamic_array(sum);

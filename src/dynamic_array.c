@@ -66,6 +66,7 @@ static void move_to_high(element_t* dst, element_t* src, size_t count)
     }
 }
 
+
 dynamic_array* new_dynamic_array()
 {
     dynamic_array* array = malloc(sizeof(dynamic_array));
